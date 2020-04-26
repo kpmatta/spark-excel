@@ -1,7 +1,5 @@
 package com.xorbit.spark.excel
 
-import java.io.{File, FileInputStream}
-
 import org.apache.hadoop.fs.{FSDataInputStream, FileSystem, Path}
 import org.apache.poi.ss.usermodel.{Cell, CellType, DataFormatter, Row}
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
@@ -81,7 +79,7 @@ object ReadExcel {
                schema : StructType,
                requiredColumns: Array[String] ): Array[Array[Any]] = {
 
-    assert(schema.size == requiredColumns.size)
+    assert(schema.size == requiredColumns.length)
     val schemaNamesIdxMap = schema.map(_.name).zipWithIndex.toMap
     val colIdxMap = requiredColumns.map(colName => schemaNamesIdxMap(colName)).zipWithIndex.map(_.swap).toMap
 

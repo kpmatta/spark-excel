@@ -6,14 +6,12 @@ package object excel {
 
   implicit class ExcelDataFrameReader(val dataFrameReader : DataFrameReader) extends AnyVal {
 
-    def excel(
-               headerIndex: Int = 1,
+    def excel( headerIndex: Int = 1,
                startRowIndex : Int = 2,
                endRowIndex : Int = -1,
                startColIndex : Int = 1,
                endColIndex : Int = -1,
-               timestampFormat: String = null
-             ): DataFrameReader = {
+               timestampFormat: String = null ): DataFrameReader = {
       Map(
         "headerIndex" -> headerIndex,
         "startRowIndex" -> startRowIndex,
@@ -29,6 +27,5 @@ package object excel {
           }
       }
     }
-
   }
 }

@@ -8,14 +8,12 @@ class DefaultSource
   extends RelationProvider
   with SchemaRelationProvider
   with CreatableRelationProvider {
-  override def createRelation(
-                               sqlContext: SQLContext,
+  override def createRelation( sqlContext: SQLContext,
                                parameters: Map[String, String]): ExcelRelation = {
     createRelation(sqlContext, parameters, null)
   }
 
-  override def createRelation(
-                               sqlContext: SQLContext,
+  override def createRelation( sqlContext: SQLContext,
                                parameters: Map[String, String],
                                schema: StructType): ExcelRelation = {
 
@@ -41,8 +39,7 @@ class DefaultSource
       timestampFormat)(sqlContext)
   }
 
-  override def createRelation(
-                               sqlContext: SQLContext,
+  override def createRelation( sqlContext: SQLContext,
                                mode: SaveMode,
                                parameters: Map[String, String],
                                data: DataFrame): ExcelRelation = {

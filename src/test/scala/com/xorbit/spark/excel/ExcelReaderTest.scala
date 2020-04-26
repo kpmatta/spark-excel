@@ -7,7 +7,8 @@ class ExcelReaderTest extends org.scalatest.FunSuite {
 
   test ("Read excel") {
 
-    val spark = SparkSession.builder().master("local[*]")
+    val spark = SparkSession.builder()
+      .master("local[*]")
       .appName("Test").getOrCreate()
 
     spark.sparkContext.setLogLevel("ERROR")
@@ -25,8 +26,8 @@ class ExcelReaderTest extends org.scalatest.FunSuite {
       .option("headerIndex", 1)
       .option("startRowIndex", 2)
       .option("endRowIndex", 3)
-//      .option("startColIndex", 1)
-//      .option("endColIndex", 5)
+      .option("startColIndex", 1)
+      .option("endColIndex", 5)
       .schema(schema)
       .load("sample.xlsx")
 

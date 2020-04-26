@@ -2,8 +2,8 @@ package com.xorbit.spark.excel
 
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql
-import org.apache.spark.sql.{Row, SQLContext, SparkSession}
-import org.apache.spark.sql.sources.{BaseRelation, InsertableRelation, PrunedScan, TableScan}
+import org.apache.spark.sql.SQLContext
+import org.apache.spark.sql.sources.{BaseRelation, PrunedScan, TableScan}
 import org.apache.spark.sql.types._
 
 case class ExcelRelation (
@@ -28,12 +28,20 @@ case class ExcelRelation (
 
   override def buildScan(requiredColumns: Array[String]): RDD[sql.Row] = {
     val endColumnIndex = startColIndex + schema.size -1
-    val data = ReadExcel.readData(filePath, sheetName, startRowIndex, endRowIndex, startColIndex, endColumnIndex, schema, requiredColumns)
+    val data = ReadExcel.readData(
+      filePath,
+      sheetName,
+      startRowIndex,
+      endRowIndex,
+      startColIndex,
+      endColumnIndex,
+      schema,
+      requiredColumns)
 
-    val shuffledData = data
-      .map( lineTokens => sql.Row.fromSeq(lineTokens))
+    val dataRows = data
+      .map( arrTokens => sql.Row.fromSeq(arrTokens))
 
-    sqlContext.sparkContext.parallelize(shuffledData)
+    sqlContext.sparkContext.parallelize(dataRows)
   }
 }
 
