@@ -36,7 +36,8 @@ case class ExcelRelation (
       startColIndex,
       endColumnIndex,
       schema,
-      requiredColumns)
+      if(requiredColumns.isEmpty) schema.map(_.name).toArray else requiredColumns)
+
 
     val dataRows = data
       .map( arrTokens => sql.Row.fromSeq(arrTokens))

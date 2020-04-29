@@ -81,7 +81,7 @@ object ReadExcel {
 
     assert(schema.size == requiredColumns.length)
     val schemaNamesIdxMap = schema.map(_.name).zipWithIndex.toMap
-    val colIdxMap = requiredColumns.map(colName => schemaNamesIdxMap(colName)).zipWithIndex.map(_.swap).toMap
+    val colIdxMap = requiredColumns.map(colName => schemaNamesIdxMap(colName)).zipWithIndex.toMap
 
     val data = collection.mutable.ArrayBuffer.empty[Array[Any]]
 
