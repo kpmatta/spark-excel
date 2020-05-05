@@ -20,29 +20,37 @@ case class ExcelRelation (
     with TableScan
     with PrunedScan {
 
-  override def schema: StructType = userSchema
+  private lazy val inferredSchema : StructType = if (userSchema == null) inferSchema() else userSchema
+
+  override def schema: StructType = inferredSchema
 
   override def buildScan(): RDD[sql.Row] = {
     buildScan(schema.map(_.name).toArray)
   }
 
   override def buildScan(requiredColumns: Array[String]): RDD[sql.Row] = {
-    val endColumnIndex = startColIndex + schema.size -1
+    val calcEndIColIndex = startColIndex + schema.size - 1
     val data = ReadExcel.readData(
       filePath,
       sheetName,
       startRowIndex,
       endRowIndex,
       startColIndex,
-      endColumnIndex,
+      calcEndIColIndex,
       schema,
       if(requiredColumns.isEmpty) schema.map(_.name).toArray else requiredColumns)
 
-
     val dataRows = data
-      .map( arrTokens => sql.Row.fromSeq(arrTokens))
+      .map(arrTokens => sql.Row.fromSeq(arrTokens))
 
     sqlContext.sparkContext.parallelize(dataRows)
+  }
+
+  // TODO: Datatype is String for now, if no schema is provided
+  // TODO: Infer schema to be implemented
+  def inferSchema() : StructType = {
+    val header = ReadExcel.getHeader(filePath, sheetName, headerIndex, startColIndex, endColIndex)
+    StructType(header.map(name => StructField(s"$name", StringType)))
   }
 }
 
