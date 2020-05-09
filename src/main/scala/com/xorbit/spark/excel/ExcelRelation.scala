@@ -1,5 +1,6 @@
 package com.xorbit.spark.excel
 
+import com.xorbit.spark.excel.util.InferSchema
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql
 import org.apache.spark.sql.SQLContext
@@ -15,12 +16,13 @@ case class ExcelRelation (
     startColIndex : Int = 1,
     endColIndex : Int = -1,
     userSchema : StructType = null,
+    inferSchema : Boolean = false,
     timestampFormat: String = null)(@transient val sqlContext: SQLContext)
   extends BaseRelation
     with TableScan
     with PrunedScan {
 
-  private lazy val inferredSchema : StructType = if (userSchema == null) inferSchema() else userSchema
+  private lazy val inferredSchema : StructType = if (userSchema == null) inferSchemaFromData() else userSchema
 
   override def schema: StructType = inferredSchema
 
@@ -46,11 +48,21 @@ case class ExcelRelation (
     sqlContext.sparkContext.parallelize(dataRows)
   }
 
-  // TODO: Datatype is String for now, if no schema is provided
-  // TODO: Infer schema to be implemented
-  def inferSchema() : StructType = {
+  def inferSchemaFromData() : StructType = {
     val header = ReadExcel.getHeader(filePath, sheetName, headerIndex, startColIndex, endColIndex)
-    StructType(header.map(name => StructField(s"$name", StringType)))
+    if(!inferSchema) {
+      StructType(header.map(name => StructField(s"$name", StringType)))
+    }
+    else {
+      val dataTypes = InferSchema(
+        filePath,
+        sheetName,
+        startRowIndex,
+        startRowIndex + 10,
+        startColIndex,
+        startColIndex + header.length-1)
+      StructType(header.zip(dataTypes).map{case (name, dtype) => StructField(name, dtype)})
+    }
   }
 }
 

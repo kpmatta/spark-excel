@@ -30,12 +30,13 @@ class ExcelReaderTest extends org.scalatest.FunSuite {
 
     val df = spark.read
       .format("com.xorbit.spark.excel")
-      .option("headerIndex", -1)
+//      .option("headerIndex", 0)
       .option("startDataRowIndex", 2)
-      .option("endDataRowIndex", 100)
+      .option("endDataRowIndex", 1000)
       .option("startColIndex", 1)
       .option("endColIndex", schema.size)
-      .schema(schema)
+      .option("inferSchema", "true")
+//      .schema(schema)
       .load("us_corona_data.xlsx")
 //        .cache()
 
@@ -48,24 +49,24 @@ class ExcelReaderTest extends org.scalatest.FunSuite {
     val spark = SparkSessionLocal()
 
     spark.sparkContext.setLogLevel("ERROR")
-
     val schema = StructType(List(
       StructField("Id", IntegerType, true),
       StructField("Name", StringType, true),
       StructField("City", StringType, true),
       StructField("Date", DateType, true),
-      StructField("Value", DecimalType(16, 4), true),
-      StructField("Calc", StringType, true)
+      StructField("Value1", DecimalType(16, 4), true),
+      StructField("Calc1", StringType, true)
     ))
 
     val df = spark.read
       .format("com.xorbit.spark.excel")
-      .option("headerIndex", 1)
-      .option("startDataRowIndex", 2)
-      .option("endDataRowIndex", 100)
-      .option("startColIndex", 1)
-      .option("endColIndex", -1)
-      .schema(schema)
+//      .option("headerIndex", 0)
+//      .option("startDataRowIndex", 2)
+//      .option("endDataRowIndex", 100)
+//      .option("startColIndex", 1)
+//      .option("endColIndex", -1)
+      .option("inferSchema", true)
+//      .schema(schema)
       .load("Sample.xlsx")
     //        .cache()
 
@@ -74,7 +75,7 @@ class ExcelReaderTest extends org.scalatest.FunSuite {
     df.show()
   }
 
-  test("Pretty Print : Two Dimensional Data ") {
+  ignore("Pretty Print : Two Dimensional Data ") {
 
     def prettyPrint2D(data : Array[Array[Any]],
                       colSeparator : Boolean = false,
@@ -93,7 +94,7 @@ class ExcelReaderTest extends org.scalatest.FunSuite {
       val headColSep =  if(colSeparator) "+" else ""
       val colSepChar = if(colSeparator) "|" else ""
 
-      val dashLine = paddedData.head.map(r  => ("-" * r.length )).mkString(headColSep, headColSep, headColSep)
+      val dashLine = paddedData.head.map(r  => "-" * r.length).mkString(headColSep, headColSep, headColSep)
 
       printRowSep(dashLine)
       paddedData.foreach { row =>
@@ -107,7 +108,7 @@ class ExcelReaderTest extends org.scalatest.FunSuite {
                       Array("Montgomery", "Albany", "Des Moines", "Salem"),
                       Array(10.21, 3, 1234, 123456789))
 
-    prettyPrint2D(data, true, rowSeparator = false)
+    prettyPrint2D(data, colSeparator = true)
 
     /*
     output will be:

@@ -1,11 +1,11 @@
 package com.xorbit.spark.excel
 
 import org.apache.hadoop.fs.{FSDataInputStream, FileSystem, Path}
-import org.apache.poi.ss.usermodel.{Cell, CellType, DataFormatter, DateUtil, Row}
-import org.apache.spark.sql
+import org.apache.poi.ss.usermodel.Row
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.types._
 import com.monitorjbl.xlsx.StreamingReader
+import com.xorbit.spark.excel.util.CellConversion
 import scala.collection.JavaConverters._
 import scala.util.control.Breaks._
 
@@ -31,7 +31,7 @@ object ReadExcel {
                 startColIndex : Int,
                 endColIndex : Int): Array[String] = {
 
-    assert(headerRowIdx > 0 || headerRowIdx == -1, "headerIndex  is one based index, -1 for ignore header, default is 1")
+    assert(headerRowIdx > -1, "headerIndex is one based index, 0 for ignore header, default is 1")
     assert(startColIndex > 0, "startColIndex is one based index, default is 1" )
     assert(endColIndex > 0 || endColIndex == -1, "endColIndex is one based index, -1 for all columns, default is -1")
 
@@ -47,8 +47,8 @@ object ReadExcel {
 
       try {
         val sheet = if (sheetName.trim.isEmpty) workbook.getSheetAt(0) else workbook.getSheet(sheetName)
-        if(headerRowIdx == -1) {
-          sheet.asScala.head.asScala.map( cell => s"${getVal(cell, StringType).toString}").toArray
+        if(headerRowIdx == 0) {
+          sheet.asScala.head.asScala.zipWithIndex.map( c => s"_C${c._2}").toArray
         }
         else {
           var header = Array.empty[String]
@@ -129,67 +129,7 @@ object ReadExcel {
     }
   }
 
-  val dataFormat = new DataFormatter()
 
-  val getNumericValue: Cell => Double = (cell : Cell) => {
-    cell.getCellType match {
-      case CellType.FORMULA =>
-        cell.getCachedFormulaResultType match {
-          case CellType.NUMERIC => cell.getNumericCellValue
-          case CellType.STRING => cell.getRichStringCellValue.toString.toDouble
-//          case CellType.BLANK => null
-          case _ => dataFormat.formatCellValue(cell).toDouble
-        }
-      case CellType.NUMERIC => cell.getNumericCellValue
-      case CellType.STRING => cell.getStringCellValue.toDouble
-//      case CellType.BLANK => null
-      case _ => dataFormat.formatCellValue(cell).toDouble
-    }
-  }
-
-  val getStringVal: Cell => String = (cell : Cell) => {
-    cell.getCellType match {
-      case CellType.FORMULA =>
-        cell.getCachedFormulaResultType match {
-          case CellType.NUMERIC => cell.getNumericCellValue.toString
-          case CellType.STRING => cell.getStringCellValue
-//          case CellType.BLANK => null
-          case _ => dataFormat.formatCellValue(cell)
-        }
-
-      case CellType.NUMERIC => cell.getNumericCellValue.toString
-      case CellType.STRING => cell.getStringCellValue
-//      case CellType.BLANK => null
-      case _ => dataFormat.formatCellValue(cell)
-    }
-  }
-
-  val getVal: (Cell, DataType) => Any = (cell : Cell, dataType : sql.types.DataType) => {
-    if(cell.getCellType == CellType.BLANK)
-      null
-    else {
-      try {
-        dataType match {
-          case _: ByteType => getNumericValue(cell).toByte
-          case _: ShortType => getNumericValue(cell).toShort
-          case _: IntegerType => getNumericValue(cell).toInt
-          case _: LongType => getNumericValue(cell).toLong
-          case _: FloatType => getNumericValue(cell).floatValue()
-          case _: DoubleType => getNumericValue(cell)
-          case _: BooleanType => getStringVal(cell).toBoolean
-          case _: DecimalType => Decimal(getNumericValue(cell))
-          case _: TimestampType => new java.sql.Timestamp(DateUtil.getJavaDate(getNumericValue(cell)).getTime)
-          case _: DateType => new java.sql.Date(DateUtil.getJavaDate(getNumericValue(cell)).getTime)
-          case _: StringType => getStringVal(cell)
-          case _ => throw new RuntimeException(s"Unsupported type: ${dataType.toString}")
-        }
-      }
-      catch {
-        case ex: Exception => println(ex.toString)
-        null
-      }
-    }
-  }
 
   /**
    * getRow
@@ -203,7 +143,7 @@ object ReadExcel {
       for (cell <- row.asScala) {
         val idx = cell.getColumnIndex + 1
         if(isIndexInside(idx, startColIdx, endColIdx)) {
-          header += getVal(cell, StringType).toString
+          header += CellConversion.castTo(cell, StringType).toString
         }
         else if(isIndexOutside(idx, endColIdx)) {
           break
@@ -232,7 +172,7 @@ object ReadExcel {
         val colShuffleIdx = colIdxMap(offsetIdx)
 
         if (isIndexInside(colIdx, startColIdx, endColIdx)) {
-          rowData(colShuffleIdx) = getVal(cell, schema(offsetIdx).dataType)
+          rowData(colShuffleIdx) = CellConversion.castTo(cell, schema(offsetIdx).dataType)
         }
         else if (isIndexOutside(colIdx, endColIdx)) {
           break
