@@ -56,6 +56,7 @@ object ReadExcel {
             for (row <- sheet.asScala) {
               if (row.getRowNum + 1 == headerRowIdx) {
                 header = getRow(row, startColIndex, endColIndex)
+                  .zipWithIndex.map{case(s, i) => if(s == null) s"_C${i}" else s}
                 break
               }
             }
@@ -143,7 +144,7 @@ object ReadExcel {
       for (cell <- row.asScala) {
         val idx = cell.getColumnIndex + 1
         if(isIndexInside(idx, startColIdx, endColIdx)) {
-          header += CellConversion.castTo(cell, StringType).toString
+          header += CellConversion.toStringVal(cell)
         }
         else if(isIndexOutside(idx, endColIdx)) {
           break
