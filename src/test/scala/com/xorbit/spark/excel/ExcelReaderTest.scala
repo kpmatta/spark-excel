@@ -6,9 +6,7 @@ import org.apache.spark.sql.types._
 class ExcelReaderTest extends org.scalatest.FunSuite {
 
   test ("Read excel") {
-
     val spark = SparkSessionLocal()
-
     spark.sparkContext.setLogLevel("ERROR")
 
     val schema = StructType(List(
@@ -30,15 +28,14 @@ class ExcelReaderTest extends org.scalatest.FunSuite {
 
     val df = spark.read
       .format("com.xorbit.spark.excel")
-//      .option("headerIndex", 0)
+      .option("headerIndex", 1)
       .option("startDataRowIndex", 2)
       .option("endDataRowIndex", 1000)
       .option("startColIndex", 1)
       .option("endColIndex", schema.size)
       .option("inferSchema", "true")
 //      .schema(schema)
-      .load("us_corona_data.xlsx")
-//        .cache()
+      .load(System.getProperty("user.dir") + "/TestFiles/us_corona_data.xlsx")
 
     println(df.count())
     df.printSchema()
@@ -60,15 +57,14 @@ class ExcelReaderTest extends org.scalatest.FunSuite {
 
     val df = spark.read
       .format("com.xorbit.spark.excel")
-//      .option("headerIndex", 0)
-//      .option("startDataRowIndex", 2)
-//      .option("endDataRowIndex", 100)
-//      .option("startColIndex", 1)
-//      .option("endColIndex", -1)
+      .option("headerIndex", "3")
+      .option("startDataRowIndex", 4)
+      .option("endDataRowIndex", -1)
+      .option("startColIndex", 1)
+      .option("endColIndex", -1)
       .option("inferSchema", true)
-//      .schema(schema)
-      .load("Sample.xlsx")
-    //        .cache()
+      .schema(schema)
+      .load(System.getProperty("user.dir") + "/TestFiles/Sample.xlsx")
 
     println(df.count())
     df.printSchema()

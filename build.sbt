@@ -1,7 +1,7 @@
 name := "spark-excel-reader"
-version := "1.0.0-SNAPSHOT"
+version := "1.0.0"
 organization := "com.xorbit"
-scalaVersion := "2.11.10"
+scalaVersion := "2.12.10"
 
 val sparkVersion = "2.4.4"
 
