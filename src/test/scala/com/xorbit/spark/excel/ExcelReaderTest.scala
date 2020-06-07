@@ -1,9 +1,9 @@
 package com.xorbit.spark.excel
 
-import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.types._
+import org.scalatest.matchers.should.Matchers
 
-class ExcelReaderTest extends org.scalatest.FunSuite {
+class ExcelReaderTest extends org.scalatest.FunSuite with Matchers {
 
   test ("Read excel") {
     val spark = SparkSessionLocal()
@@ -26,20 +26,22 @@ class ExcelReaderTest extends org.scalatest.FunSuite {
       StructField("State", StringType, true)
     ))
 
-    val df = spark.read
-      .format("com.xorbit.spark.excel")
-      .option("headerIndex", 1)
-      .option("startDataRowIndex", 2)
-      .option("endDataRowIndex", 1000)
-      .option("startColIndex", 1)
-      .option("endColIndex", schema.size)
-      .option("inferSchema", "true")
-//      .schema(schema)
-      .load(System.getProperty("user.dir") + "/TestFiles/us_corona_data.xlsx")
+    spark.time {
+      val df = spark.read
+        .format("com.xorbit.spark.excel")
+        .option("headerIndex", 1)
+        .option("startDataRowIndex", 2)
+        .option("endDataRowIndex", 1000)
+        .option("startColIndex", 1)
+        .option("endColIndex", schema.size)
+        .option("inferSchema", "true")
+//        .schema(schema)
+        .load(System.getProperty("user.dir") + "/TestFiles/us_corona_data.xlsx")
 
-    println(df.count())
-    df.printSchema()
-    df.show()
+      df.count() shouldBe 999
+      df.printSchema()
+      df.show()
+    }
   }
 
   test ("Read Sample.xlsx") {
@@ -57,12 +59,12 @@ class ExcelReaderTest extends org.scalatest.FunSuite {
 
     val df = spark.read
       .format("com.xorbit.spark.excel")
-      .option("headerIndex", "3")
+      .option("headerIndex", 10)            // ignores this option,  header reading as schema is provided
       .option("startDataRowIndex", 4)
       .option("endDataRowIndex", -1)
       .option("startColIndex", 1)
       .option("endColIndex", -1)
-      .option("inferSchema", true)
+      .option("inferSchema", true)         // ignores this option, as schema is provided
       .schema(schema)
       .load(System.getProperty("user.dir") + "/TestFiles/Sample.xlsx")
 

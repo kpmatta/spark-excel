@@ -29,14 +29,14 @@ object ReadExcel {
                 sheetName : String,
                 headerRowIdx : Int,
                 startColIndex : Int,
-                endColIndex : Int): Array[String] = {
+                endColIndex : Int): Option[List[String]] = {
 
     assert(headerRowIdx > -1, "headerIndex is one based index, 0 for ignore header, default is 1")
     assert(startColIndex > 0, "startColIndex is one based index, default is 1" )
     assert(endColIndex > 0 || endColIndex == -1, "endColIndex is one based index, -1 for all columns, default is -1")
 
     if (headerRowIdx == -1 && endColIndex != -1) {
-      Range(0, endColIndex - startColIndex+1).map(i => s"_C$i").toArray
+      Option(Range(0, endColIndex - startColIndex+1).map(i => s"_C$i").toList)
     }
     else {
       val is = openFile(filePath)
@@ -48,20 +48,15 @@ object ReadExcel {
       try {
         val sheet = if (sheetName.trim.isEmpty) workbook.getSheetAt(0) else workbook.getSheet(sheetName)
         if(headerRowIdx == 0) {
-          sheet.asScala.head.asScala.zipWithIndex.map( c => s"_C${c._2}").toArray
+          Option(sheet.asScala.head.asScala.zipWithIndex.map( c => s"_C${c._2}").toList)
         }
         else {
-          var header = Array.empty[String]
-          breakable {
-            for (row <- sheet.asScala) {
-              if (row.getRowNum + 1 == headerRowIdx) {
-                header = getRow(row, startColIndex, endColIndex)
+          sheet.asScala
+            .find(_.getRowNum+1 == headerRowIdx)
+            .map{ row =>
+              getRow(row, startColIndex, endColIndex)
                   .zipWithIndex.map{case(s, i) => if(s == null) s"_C${i}" else s}
-                break
-              }
             }
-          }
-          header
         }
       }
       finally {
@@ -115,7 +110,7 @@ object ReadExcel {
         for ( row <- sheet.asScala) {
           val rowIdx = row.getRowNum + 1
           if(isIndexInside(rowIdx, startDataRow, endDataRow)) {
-            data.append(getRow(row, startColIdx, endColIdx, schema, colIdxMap))
+            data += getDataRow(row, startColIdx, endColIdx, schema, colIdxMap)
           }
           else if (isIndexOutside(rowIdx, endDataRow)) {
             break
@@ -137,9 +132,9 @@ object ReadExcel {
    */
   def getRow( row : Row,
               startColIdx : Int,
-              endColIdx : Int): Array[String] = {
+              endColIdx : Int): List[String] = {
 
-   val header = collection.mutable.ArrayBuffer.empty[String]
+   val header = collection.mutable.ListBuffer.empty[String]
     breakable {
       for (cell <- row.asScala) {
         val idx = cell.getColumnIndex + 1
@@ -151,28 +146,28 @@ object ReadExcel {
         }
       }
     }
-    header.toArray
+    header.toList
   }
 
   /**
    *
-   * getRow
+   * getDataRow
    */
-  def getRow( row : Row,
-              startColIdx : Int,
-              endColIdx : Int,
-              schema : StructType,
-              colIdxMap : Map[Int, Int]): Array[Any] = {
+  def getDataRow( row : Row,
+                  startColIdx : Int,
+                  endColIdx : Int,
+                  schema : StructType,
+                  colIdxMap : Map[Int, Int]): Array[Any] = {
 
     val numberOfCols = endColIdx - startColIdx + 1
     val rowData = new Array[Any](numberOfCols)
     breakable {
       for(cell <- row.asScala) {
         val colIdx = cell.getColumnIndex+1
-        val offsetIdx = colIdx - startColIdx
-        val colShuffleIdx = colIdxMap(offsetIdx)
 
         if (isIndexInside(colIdx, startColIdx, endColIdx)) {
+          val offsetIdx = colIdx - startColIdx
+          val colShuffleIdx = colIdxMap(offsetIdx)
           rowData(colShuffleIdx) = CellConversion.castTo(cell, schema(offsetIdx).dataType)
         }
         else if (isIndexOutside(colIdx, endColIdx)) {

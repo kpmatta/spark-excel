@@ -49,7 +49,11 @@ case class ExcelRelation (
   }
 
   def inferSchemaFromData() : StructType = {
-    val header = ReadExcel.getHeader(filePath, sheetName, headerIndex, startColIndex, endColIndex)
+    val headerOpt = ReadExcel.getHeader(filePath, sheetName, headerIndex, startColIndex, endColIndex)
+    if(headerOpt.isEmpty || headerOpt.get.isEmpty)
+      throw new IllegalArgumentException(s"Unable to get header at row number $headerIndex")
+
+    val header = headerOpt.get
     if(!inferSchema) {
       StructType(header.map(name => StructField(s"$name", StringType)))
     }
