@@ -2,6 +2,8 @@
 A simple yet powerful spark excel reading library to read excel files into Spark DataFrames.
 It can read huge excel files as it is reading excel with steaming reader.
 
+![Scala CI](https://github.com/kpmatta/spark-excel/workflows/Scala%20CI/badge.svg?branch=master)
+
 # Options
 
 - headerIndex           : optional, default is 1
