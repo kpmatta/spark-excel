@@ -6,7 +6,7 @@ import org.scalatest.wordspec.AnyWordSpec
 
 class ExcelReaderTest extends AnyWordSpec with Matchers with SparkSessionLocal {
 
-  "ExcelReaderTest" should {
+  "ExcelReaderTest" ignore {
     "Read excel" in withSparkContext { (spark) =>
 
       spark.sparkContext.setLogLevel("ERROR")
