@@ -39,15 +39,13 @@ assemblyMergeStrategy in assembly := {
   case "plugin.properties" => MergeStrategy.last
   case "log4j.properties" => MergeStrategy.last
   case "overview.html" => MergeStrategy.last  // Added this for 2.1.0 I think
-//  case x =>
-//    val oldStrategy = (assemblyMergeStrategy in assembly).value
-//    oldStrategy(x)
   case x => MergeStrategy.discard
 }
 
-githubOwner := "kpmatta"
-githubRepository := "spark-excel"
-githubTokenSource := TokenSource.GitConfig("github.token")
+// Publish to GitHub
+//githubOwner := "kpmatta"
+//githubRepository := "spark-excel"
+//githubTokenSource := TokenSource.GitConfig("github.token")
 
 assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
 
