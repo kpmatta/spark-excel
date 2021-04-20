@@ -10,7 +10,7 @@ trait SparkSessionLocal extends org.scalatest.FunSuite with Matchers with Before
   before {
       spark = SparkSession.builder()
         .appName("testing")
-        .master("local[*]")
+        .master("local")
         .config("spark.driver.bindAddress","127.0.0.1")
         .getOrCreate()
   }
