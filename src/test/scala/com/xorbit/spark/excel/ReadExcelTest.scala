@@ -1,33 +1,33 @@
 package com.xorbit.spark.excel
 
-import org.scalatest.BeforeAndAfter
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class ReadExcelTest extends org.scalatest.FunSuite with Matchers with BeforeAndAfter {
+class ReadExcelTest extends AnyWordSpec with Matchers with SparkSessionLocal {
 
-  before {
-    SparkSessionLocal()
+  "ReadExcelTest-1" should {
+    "Test getHeader" in withSparkContext { (spark) =>
+      val headerOpt = ReadExcel.getHeader(
+        System.getProperty("user.dir") + "/TestFiles/us_corona_data.xlsx",
+        "",
+        1,
+        1,
+        -1)
+
+      headerOpt.get.mkString(",") shouldBe "UID,iso2,iso3,code3,FIPS,Admin2,Lat,Combined_Key,Population,Date,Case,Long,Country/Region,Province/State"
+    }
   }
 
-  test("Test getHeader") {
-    val headerOpt = ReadExcel.getHeader(
-       System.getProperty("user.dir") + "/TestFiles/us_corona_data.xlsx",
-      "",
-      1,
-      1,
-      -1)
+  "ReadExcelTest-2" should {
+    "Test with wrong header index" in withSparkContext { (spark) =>
+      val headerOpt = ReadExcel.getHeader(
+        System.getProperty("user.dir") + "/TestFiles/Sample.xlsx",
+        "",
+        10,
+        1,
+        -1)
 
-    headerOpt.get.mkString(",") shouldBe "UID,iso2,iso3,code3,FIPS,Admin2,Lat,Combined_Key,Population,Date,Case,Long,Country/Region,Province/State"
-  }
-
-  test("Test with wrong header index") {
-    val headerOpt = ReadExcel.getHeader(
-      System.getProperty("user.dir") + "/TestFiles/Sample.xlsx",
-      "",
-      10,
-      1,
-      -1)
-
-    headerOpt shouldBe None
+      headerOpt shouldBe None
+    }
   }
 }

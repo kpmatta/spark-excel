@@ -2,9 +2,16 @@ package com.xorbit.spark.excel
 
 import org.apache.spark.sql.SparkSession
 
-object SparkSessionLocal {
-  def apply(): SparkSession = SparkSession.builder()
-    .appName("testing")
-    .master("local[*]")
-    .getOrCreate()
+trait SparkSessionLocal {
+  def withSparkContext(testMethod: (SparkSession) => Any) {
+    val spark = SparkSession.builder()
+      .appName("udf testings")
+      .master("local[*]")
+      .config("spark.driver.bindAddress", "127.0.0.1")
+      .getOrCreate().newSession()
+    try {
+      testMethod(spark)
+    }
+    finally spark.stop()
+  }
 }

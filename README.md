@@ -55,3 +55,15 @@ import org.apache.spark.sql._
 ## Building the Source
 Using SBT build tool with scala 2.12
 - sbt assembly
+
+## Using the pre-build GitHub package
+* Gradle
+```text
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
+
+    dependencies {
+        implementation 'com.github.kpmatta:spark-excel:v2.0.0'
+    }
+```
