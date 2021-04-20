@@ -5,7 +5,7 @@ import org.scalatest.wordspec.AnyWordSpec
 
 class ReadExcelTest extends AnyWordSpec with Matchers with SparkSessionLocal {
 
-  "ReadExcelTest" should {
+  "ReadExcelTest-1" should {
     "Test getHeader" in withSparkContext { (spark) =>
       val headerOpt = ReadExcel.getHeader(
         System.getProperty("user.dir") + "/TestFiles/us_corona_data.xlsx",
@@ -18,7 +18,7 @@ class ReadExcelTest extends AnyWordSpec with Matchers with SparkSessionLocal {
     }
   }
 
-  "ReadExcelTest" should {
+  "ReadExcelTest-2" should {
     "Test with wrong header index" in withSparkContext { (spark) =>
       val headerOpt = ReadExcel.getHeader(
         System.getProperty("user.dir") + "/TestFiles/Sample.xlsx",

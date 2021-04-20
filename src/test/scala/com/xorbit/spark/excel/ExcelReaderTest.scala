@@ -6,7 +6,7 @@ import org.scalatest.wordspec.AnyWordSpec
 
 class ExcelReaderTest extends AnyWordSpec with Matchers with SparkSessionLocal {
 
-  "ExcelReaderTest" ignore {
+  "ExcelReaderTest-us_corona_data" ignore {
     "Read excel" in withSparkContext { (spark) =>
 
       spark.sparkContext.setLogLevel("ERROR")
@@ -47,8 +47,8 @@ class ExcelReaderTest extends AnyWordSpec with Matchers with SparkSessionLocal {
     }
   }
 
-  "ExcelReaderTest" ignore {
-    "Read Sample.xlsx" in withSparkContext { (spark) =>
+  "ExcelReaderTest-Sample.xlsx" ignore {
+    "Read Excel" in withSparkContext { (spark) =>
 
       spark.sparkContext.setLogLevel("ERROR")
       val schema = StructType(List(
