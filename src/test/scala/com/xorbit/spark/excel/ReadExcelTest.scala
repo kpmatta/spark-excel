@@ -1,9 +1,6 @@
 package com.xorbit.spark.excel
 
-import org.scalatest.BeforeAndAfter
-import org.scalatest.matchers.should.Matchers
-
-class ReadExcelTest extends org.scalatest.FunSuite with Matchers with BeforeAndAfter with SparkSessionLocal {
+class ReadExcelTest extends SparkSessionLocal {
 
   test("Test getHeader") {
     val headerOpt = ReadExcel.getHeader(
