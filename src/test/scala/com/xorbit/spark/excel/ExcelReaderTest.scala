@@ -43,7 +43,7 @@ class ExcelReaderTest extends org.scalatest.FunSuite with Matchers with SparkSes
     }
   }
 
-  test ("Read Sample.xlsx") {
+  ignore("Read Sample.xlsx") {
     spark.sparkContext.setLogLevel("ERROR")
     val schema = StructType(List(
       StructField("Id", IntegerType, true),
