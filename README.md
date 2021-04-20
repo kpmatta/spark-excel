@@ -24,12 +24,12 @@ import org.apache.spark.sql.types._
 import org.apache.spark.sql._
 
    val schema = StructType(List(
-      StructField("Id", IntegerType, true),
-      StructField("Name", StringType, true),
-      StructField("City", StringType, true),
-      StructField("Date", DateType, true),
-      StructField("Value1", DecimalType(16, 4), true),
-      StructField("Calc1", StringType, true)
+      StructField("Id", IntegerType, nullable = true),
+      StructField("Name", StringType, nullable = true),
+      StructField("City", StringType, nullable = true),
+      StructField("Date", DateType, nullable = true),
+      StructField("Value1", DecimalType(16, 4), nullable = true),
+      StructField("Calc1", StringType, nullable = true)
     ))
 
     val spark = SparkSession.builder().getOrCreate()
@@ -43,7 +43,7 @@ import org.apache.spark.sql._
       .option("endDataRowIndex", 100)       // One based End Data row index
       .option("startColIndex", 1)           // One based Start column index
       .option("endColIndex", -1)            // One based End column index
-      .option("inferSchema", true)          // Infer Schema
+      .option("inferSchema", value = true)          // Infer Schema
       .schema(schema)                       // Schema
       .load(filePath)                       // Excel file location
 
@@ -55,3 +55,15 @@ import org.apache.spark.sql._
 ## Building the Source
 Using SBT build tool with scala 2.12
 - sbt assembly
+
+## Using the pre-build GitHub package
+* Gradle
+```text
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
+
+    dependencies {
+        implementation 'com.github.kpmatta:spark-excel:v2.0.0'
+    }
+```

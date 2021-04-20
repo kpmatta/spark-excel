@@ -1,9 +1,9 @@
 name := "spark-excel-reader"
-version := "1.0.0"
+version := "2.0.0"
 organization := "com.xorbit"
 scalaVersion := "2.12.10"
 
-val sparkVersion = "2.4.4"
+val sparkVersion = "3.0.1"
 
 libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-core" % sparkVersion % Provided,
@@ -44,6 +44,10 @@ assemblyMergeStrategy in assembly := {
 //    oldStrategy(x)
   case x => MergeStrategy.discard
 }
+
+githubOwner := "kpmatta"
+githubRepository := "spark-excel"
+githubTokenSource := TokenSource.GitConfig("github.token")
 
 assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
 
