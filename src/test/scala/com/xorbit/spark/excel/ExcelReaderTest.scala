@@ -3,10 +3,9 @@ package com.xorbit.spark.excel
 import org.apache.spark.sql.types._
 import org.scalatest.matchers.should.Matchers
 
-class ExcelReaderTest extends org.scalatest.FunSuite with Matchers {
+class ExcelReaderTest extends org.scalatest.FunSuite with Matchers with SparkSessionLocal {
 
   test ("Read excel") {
-    val spark = SparkSessionLocal()
     spark.sparkContext.setLogLevel("ERROR")
 
     val schema = StructType(List(
@@ -45,8 +44,6 @@ class ExcelReaderTest extends org.scalatest.FunSuite with Matchers {
   }
 
   test ("Read Sample.xlsx") {
-    val spark = SparkSessionLocal()
-
     spark.sparkContext.setLogLevel("ERROR")
     val schema = StructType(List(
       StructField("Id", IntegerType, true),

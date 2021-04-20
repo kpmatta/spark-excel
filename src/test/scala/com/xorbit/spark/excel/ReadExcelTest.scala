@@ -3,11 +3,7 @@ package com.xorbit.spark.excel
 import org.scalatest.BeforeAndAfter
 import org.scalatest.matchers.should.Matchers
 
-class ReadExcelTest extends org.scalatest.FunSuite with Matchers with BeforeAndAfter {
-
-  before {
-    SparkSessionLocal()
-  }
+class ReadExcelTest extends org.scalatest.FunSuite with Matchers with BeforeAndAfter with SparkSessionLocal {
 
   test("Test getHeader") {
     val headerOpt = ReadExcel.getHeader(
