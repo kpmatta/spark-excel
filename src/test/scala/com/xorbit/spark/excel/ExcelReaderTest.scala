@@ -20,7 +20,7 @@ class ExcelReaderTest extends AnyFunSuite with Matchers with BeforeAndAfterEach 
     spark.stop()
   }
 
-  test ("Read excel") {
+  ignore("Read excel") {
     spark.sparkContext.setLogLevel("ERROR")
 
     val schema = StructType(List(
@@ -58,7 +58,7 @@ class ExcelReaderTest extends AnyFunSuite with Matchers with BeforeAndAfterEach 
     }
   }
 
-  test("Read Sample.xlsx") {
+  ignore("Read Sample.xlsx") {
     spark.sparkContext.setLogLevel("ERROR")
     val schema = StructType(List(
       StructField("Id", IntegerType, true),
