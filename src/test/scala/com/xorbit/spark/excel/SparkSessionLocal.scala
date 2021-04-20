@@ -8,7 +8,7 @@ trait SparkSessionLocal {
       .appName("udf testings")
       .master("local[*]")
       .config("spark.driver.bindAddress", "127.0.0.1")
-      .getOrCreate()
+      .getOrCreate().newSession()
     try {
       testMethod(spark)
     }
