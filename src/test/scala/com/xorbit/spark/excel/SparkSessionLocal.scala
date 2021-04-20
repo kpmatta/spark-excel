@@ -8,9 +8,10 @@ import org.scalatest.matchers.should.Matchers
 trait SparkSessionLocal extends AnyFunSuite with Matchers  with BeforeAndAfterEach {
   var spark : SparkSession = _
   override def beforeEach() {
-    spark = SparkSession.builder().appName("udf testings")
+    spark = SparkSession.builder()
+      .appName("udf testings")
       .master("local[*]")
-      .config("", "")
+      .config("spark.driver.bindAddress","127.0.0.1")
       .getOrCreate()
   }
 
