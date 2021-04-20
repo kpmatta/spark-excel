@@ -5,7 +5,7 @@ import org.scalatest.matchers.should.Matchers
 
 class ExcelReaderTest extends org.scalatest.FunSuite with Matchers with SparkSessionLocal {
 
-  test ("Read excel") {
+  ignore ("Read excel") {
     spark.sparkContext.setLogLevel("ERROR")
 
     val schema = StructType(List(
