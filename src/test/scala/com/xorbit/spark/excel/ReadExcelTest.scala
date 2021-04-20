@@ -1,6 +1,9 @@
 package com.xorbit.spark.excel
 
-class ReadExcelTest extends SparkSessionLocal {
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
+
+class ReadExcelTest extends AnyFunSuite with Matchers {
 
   test("Test getHeader") {
     val headerOpt = ReadExcel.getHeader(

@@ -8,13 +8,17 @@ val sparkVersion = "3.0.1"
 libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-core" % sparkVersion % Provided,
   "org.apache.spark" %% "spark-sql" % sparkVersion % Provided,
-  "org.scalatest" %% "scalatest" % "3.1.1" % Test,
+  "org.scalatest" %% "scalatest" % "3.2.7" % Test,
   "org.apache.poi" % "poi" % "4.1.0" % Compile,
   "org.apache.poi" % "poi-ooxml" % "4.1.0"  % Compile,
   "com.monitorjbl" % "xlsx-streamer" % "2.1.0" % Compile,
   "org.apache.commons" % "commons-compress" % "1.19" % Compile,
   "com.fasterxml.jackson.core" % "jackson-core" % "2.8.8" % Compile
 )
+
+// https://mvnrepository.com/artifact/org.scalatest/scalatest
+//libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.7" % Test
+
 
 assemblyShadeRules in assembly := Seq(
   ShadeRule.rename("org.apache.poi.**" -> "shadexorbit.poi.@1").inAll,
